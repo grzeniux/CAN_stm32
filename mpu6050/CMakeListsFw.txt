@@ -1,0 +1,34 @@
+cmake_minimum_required(VERSION 3.22)
+
+set(FwSrc 
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_can.c"
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.c"
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.c"
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc_ex.c"
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash.c"
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ex.c"
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ramfunc.c"
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.c"
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.c"
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.c"
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.c"
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma_ex.c"
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c"
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c"
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c"
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c"
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c"
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c"
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.c"
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.c"
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_adc.c"
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_adc_ex.c"
+)
+
+
+set(FwInc 
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Inc"
+    "$ENV{STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy"
+    "$ENV{STM32_FW_Emoto}/Drivers/CMSIS/Device/ST/STM32L4xx/Include"
+    "$ENV{STM32_FW_Emoto}/Drivers/CMSIS/Include"
+)

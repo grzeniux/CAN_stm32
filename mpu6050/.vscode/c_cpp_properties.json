@@ -1,0 +1,20 @@
+{
+
+
+    "configurations": [
+        {
+            "name": "STM",
+            "configurationProvider": "ms-vscode.cmake-tools",
+            "intelliSenseMode": "${default}",
+            "includePath": [
+                "${default}",
+                "${env:STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Inc",
+                "${env:STM32_FW_Emoto}/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy",
+                "${env:STM32_FW_Emoto}/Drivers/CMSIS/Device/ST/STM32L4xx/Include",
+                "${env:STM32_FW_Emoto}/Drivers/CMSIS/Include",
+                "${workspaceFolder}/Core/Inc"
+            ]
+        }
+    ],
+    "version": 4
+}
