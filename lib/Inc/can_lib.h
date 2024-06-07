@@ -9,10 +9,14 @@ extern "C" {
 #define CAN_DLC_MAX_VALUE   8
 
 typedef struct CAN_RX_TX {
+    // set this to the appropriate hcan interface
     CAN_HandleTypeDef hcan;
 
+    // only parameters that should be set in this struct are:
+    // IDE(CAN_ID_STD), RTR(CAN_RTR_DATA), TransmitGlobalTime(DISABLE).
     CAN_TxHeaderTypeDef TxHeader;
 
+    // please change this through the cl_send_filter function
     CAN_FilterTypeDef canfilterconfig;
 } CAN_RX_TX;
 
