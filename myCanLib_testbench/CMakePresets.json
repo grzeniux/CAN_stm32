@@ -1,0 +1,25 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "Ninja",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/",
+            "toolchainFile": "${sourceDir}/../STM32.cmake",
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CMAKE_MAKE_PROGRAM": "ninja"
+            }          
+        },
+        {
+            "name": "Makefiles",
+            "binaryDir": "${sourceDir}/build/",
+            "generator": "Unix Makefiles",
+            "toolchainFile": "${sourceDir}/../STM32.cmake",
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CMAKE_MAKE_PROGRAM": "make"
+            }          
+        }
+    ]
+}
