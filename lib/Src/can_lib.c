@@ -4,29 +4,38 @@
 
 int cl_send(CAN_RX_TX * cl_rx_tx, unsigned id, void * data, unsigned length) {
     uint32_t TxMailbox;
-     cl_rx_tx->TxHeader.StdId = id;
+    cl_rx_tx->TxHeader.StdId = id;
     cl_rx_tx->TxHeader.DLC = length > CAN_DLC_MAX_VALUE ? CAN_DLC_MAX_VALUE : length;
     return HAL_CAN_AddTxMessage(&cl_rx_tx->hcan, &cl_rx_tx->TxHeader, data, &TxMailbox);
 }
 
-int cl_read(CAN_RX_TX * cl_rx_tx) {
-    return 0;
+// int cl_read(CAN_RX_TX * cl_rx_tx) {
+//     return 0;
+// }
+
+void cl_setup_filter(CAN_RX_TX * cl_rx_tx, uint32_t id, uint32_t id_mask) {
+    cl_rx_tx->canfilterconfig.FilterActivation = CAN_FILTER_ENABLE;
+    // 14 banks for 1 CAN interface devices(only CAN1), 28 banks for 2 interface devices(CAN1 & CAN2)
+    // which filter bank to use from the assigned ones (default 0-13)
+    cl_rx_tx->canfilterconfig.FilterBank = 10; 
+    cl_rx_tx->canfilterconfig.FilterFIFOAssignment = CAN_FILTER_FIFO0;
+    cl_rx_tx->canfilterconfig.FilterIdHigh = (id>>16)&0xff;       // need to test if this works
+    cl_rx_tx->canfilterconfig.FilterIdLow = id&0xff;
+    cl_rx_tx->canfilterconfig.FilterMaskIdHigh = (id_mask>>16)&0xff;
+    cl_rx_tx->canfilterconfig.FilterMaskIdLow = id_mask&0xff;
+    cl_rx_tx->canfilterconfig.FilterMode = CAN_FILTERMODE_IDMASK;
+    cl_rx_tx->canfilterconfig.FilterScale = CAN_FILTERSCALE_32BIT;
+    cl_rx_tx->canfilterconfig.SlaveStartFilterBank = 0;  // how many filters to assign to the CAN1 (master can)
 }
 
-void cl_set_filter(CAN_RX_TX * cl_rx_tx, uint32_t id, uint32_t id_mask) {
-  cl_rx_tx->canfilterconfig.FilterActivation = CAN_FILTER_ENABLE;
-  // 14 banks for 1 CAN interface devices(only CAN1), 28 banks for 2 interface devices(CAN1 & CAN2)
-  cl_rx_tx->canfilterconfig.FilterBank = 10;  // which filter bank to use from the assigned ones (default 0-13)
-  cl_rx_tx->canfilterconfig.FilterFIFOAssignment = CAN_FILTER_FIFO0;
-  cl_rx_tx->canfilterconfig.FilterIdHigh = 0;
-  cl_rx_tx->canfilterconfig.FilterIdLow = 0;
-  cl_rx_tx->canfilterconfig.FilterMaskIdHigh = 0;
-  cl_rx_tx->canfilterconfig.FilterMaskIdLow = 0;
-  cl_rx_tx->canfilterconfig.FilterMode = CAN_FILTERMODE_IDMASK;
-  cl_rx_tx->canfilterconfig.FilterScale = CAN_FILTERSCALE_32BIT;
-  cl_rx_tx->canfilterconfig.SlaveStartFilterBank = 0;  // how many filters to assign to the CAN1 (master can)
+void cl_activate_filter(CAN_RX_TX * cl_rx_tx) {
+    cl_rx_tx->canfilterconfig.FilterActivation = CAN_FILTER_ENABLE;
+    HAL_CAN_ConfigFilter(&cl_rx_tx->hcan, &cl_rx_tx->canfilterconfig);
+}
 
-  HAL_CAN_ConfigFilter(&cl_rx_tx->hcan, &cl_rx_tx->canfilterconfig);
+void cl_disable_filter(CAN_RX_TX * cl_rx_tx) {
+    cl_rx_tx->canfilterconfig.FilterActivation = CAN_FILTER_DISABLE;
+    HAL_CAN_ConfigFilter(&cl_rx_tx->hcan, &cl_rx_tx->canfilterconfig);
 }
 
 /*

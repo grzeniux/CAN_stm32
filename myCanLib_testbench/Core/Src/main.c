@@ -21,19 +21,18 @@
 #include "adc.h"
 #include "can.h"
 #include "dma.h"
-#include "stm32l4xx_hal_can.h"
-#include "stm32l4xx_hal_gpio.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
-#include "stdio.h"
-#include "string.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "app_can.h"
 #include "can_lib.h"
 #include "app_tick_counter.h"
+#include <string.h>
+#include <stdio.h>
+//#include "retarget.h"
 
 /* USER CODE END Includes */
 
@@ -63,19 +62,25 @@ CAN_TxHeaderTypeDef CAN_TxHeader;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
-  HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &CAN_RxHeader, CAN_RxData);
-  HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
-  char dataString[9];
-  memcpy(dataString, CAN_RxData, 8);
-  dataString[8] = '\0';
-  printf("Data read: %s\n\r", dataString);
+  if(HAL_OK != HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &CAN_RxHeader, CAN_RxData)) {
+    Error_Handler();
+  }
+  else {
+    if(CAN_RxHeader.StdId == 121) {
+      HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+    }
+  }
+  //char dataString[9];
+  //memcpy(dataString, CAN_RxData, 8);
+  //dataString[8] = '\0';
+  //printf("Data read: %s\n\r", dataString);
 }
 
 uint32_t HAL_COUNETR_TIMER_GET_COUNTER()
@@ -134,6 +139,7 @@ int main(void)
   HAL_TIM_Base_Start(&htim2);
   HAL_TIM_Base_Start(&htim1);
   HAL_ADC_Start_DMA(&hadc1, &adc_val, 1);
+  //RetargetInit(&huart2);
 
   CAN_RX_TX can1;
   CAN_RX_TX * can1ptr = &can1;
@@ -141,6 +147,12 @@ int main(void)
   can1.TxHeader.IDE = CAN_ID_STD;
   can1.TxHeader.RTR = CAN_RTR_DATA;
   can1.TxHeader.TransmitGlobalTime = DISABLE;
+  cl_setup_filter(can1ptr, 0, 0);
+  cl_activate_filter(can1ptr);
+  // activate interrupt
+  if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK) {
+	  Error_Handler();
+  }
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -149,7 +161,18 @@ int main(void)
   {
     HAL_Delay(500);
     uint8_t fooData[12] = "Hello world!";     // bigger than 8 bytes on purpose
-    cl_send(can1ptr, 121, fooData, sizeof(fooData));
+    int cl_status;
+    cl_status = cl_send(can1ptr, 121, fooData, sizeof(fooData));
+    char * num = malloc(sizeof("123456789"));
+    itoa(cl_status, num, 10);
+    char text[20] = "status: ";
+    //text[7] = cl_status;
+    const char * brk = "\n\r";
+    strcat(text, num);
+    strcat(text, brk);
+    HAL_UART_Transmit(&huart2, ((const uint8_t *)text), strlen(text), 0xFFFF);
+    //printf("CAN tx status: %d", cl_status);
+    //HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -208,6 +231,15 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+PUTCHAR_PROTOTYPE
+{
+  /* Place your implementation of fputc here */
+  /* e.g. write a character to the USART1 and Loop until the end of transmission */
+  HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, 0xFFFF);
+
+  return ch;
+}
+
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
   if (hadc->Instance == ADC1)
