@@ -53,7 +53,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint32_t adc_val;
+uint32_t            adc_val;
 CAN_RxHeaderTypeDef CAN_RxHeader;
 uint8_t             CAN_RxData[8];
 CAN_TxHeaderTypeDef CAN_TxHeader;
@@ -147,7 +147,9 @@ int main(void)
   can1.TxHeader.IDE = CAN_ID_STD;
   can1.TxHeader.RTR = CAN_RTR_DATA;
   can1.TxHeader.TransmitGlobalTime = DISABLE;
-  cl_setup_filter(can1ptr, 0, 0);
+  // setup id as the one that's been sent, mask 0xffff means that only this id will pass thru the filter
+  // mask 0x0000 means that all ids will pass
+  cl_setup_filter(can1ptr, 121, 0xffff);
   cl_activate_filter(can1ptr);
   // activate interrupt
   if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK) {
